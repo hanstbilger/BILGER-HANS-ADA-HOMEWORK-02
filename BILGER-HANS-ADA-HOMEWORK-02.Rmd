@@ -17,10 +17,9 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 ###Challenge #1: Poisson distributions
 
 ####1.a. What is the probability that she will hear more than 8 calls during any given session?
-
 ```{r}
 
-#We can use the probability mass function for the Poisson Distribution to determine this: 
+#We can use the probability mass function for the Poisson distribution to determine this: 
 
 e <- 2.71828
 fish <- function(l, x) {
@@ -29,14 +28,27 @@ fish <- function(l, x) {
 
 fish(15, 8)
 
+#or we can also use the functionality built into R:
+
+dpois(x = 8, lambda = 15)
+
 ```
 
 ```{r}
 
-#So, the probability of hearing more than 8 calls in a given session should be:
-# P(>8) = 1 - P(<=8) = 1 - (P(0:8)
+# So, the probability of hearing more than 8 calls in a given session should be:
+# P(>8) = 1 - P(<=8) = 1 - (P(0:8))
 
-1 - sum(fish(15, 0:8))               
+1 - sum(fish(15, 0:8))          
+
+# or
+
+1 - sum(dpois(x = 0:8, lambda = 15))
+
+# or, using cumulative distribution functions
+
+1- ppois(q = 8, lambda = 15)
+
 
 ```
 
@@ -46,6 +58,10 @@ fish(15, 8)
 
 fish(15, 0)
 
+#or
+
+dpois(x = 0, lambda = 15)
+
 ```
 
 ####1.c. What is the probability that she will hear exactly 3 calls in a session?
@@ -53,6 +69,10 @@ fish(15, 0)
 ```{r}
 
 fish(15, 3)
+
+# or
+
+dpois(x = 3, lambda = 15)
 
 ```
 
@@ -72,16 +92,8 @@ barplot(monkeycalls, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", m
 
 ```{r}
 
-x <- 0:30
-l = 15
-monkeycalls <- dpois(x = x, lambda = l)
-
-n <- 104
-sim <- function(n) {
-  sample(monkeycalls, n, replace = TRUE)
-}
-
-sim(n)
+TwoYears <- rpois(104, 15)
+TwoYears
 
 ```
 
@@ -89,13 +101,7 @@ sim(n)
 
 ```{r}
 
-hist(sim(n))
+hist(TwoYears, xlim = c(0,30), xlab = "# of calls", ylab = "Frequency", prob = TRUE)
 
-sim(n)
-nrolls <- 1000
-roll <- function(x) {
-    sample(1:6, x, replace = TRUE)
-}
-
-
+# My histogram looks similar to the shape of the probability mass function plotted above, but the shape of the curve is not quite as smooth. I assume this is because the histogram is constructed from fewer observations.
 ```
