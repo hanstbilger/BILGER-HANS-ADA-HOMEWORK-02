@@ -1,0 +1,101 @@
+---
+title: "BILGER-HANS-ADA-HOMEWORK-02"
+author: "Hans Bilger"
+date: "February 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+
+###Challenge #1: Poisson distributions
+
+####1.a. What is the probability that she will hear more than 8 calls during any given session?
+
+```{r}
+
+#We can use the probability mass function for the Poisson Distribution to determine this: 
+
+e <- 2.71828
+fish <- function(l, x) {
+  ((l^x * e^(-l)) / factorial(x))
+} 
+
+fish(15, 8)
+
+```
+
+```{r}
+
+#So, the probability of hearing more than 8 calls in a given session should be:
+# P(>8) = 1 - P(<=8) = 1 - (P(0:8)
+
+1 - sum(fish(15, 0:8))               
+
+```
+
+####1.b. What is the probability that she will hear no calls in a session?
+
+```{r}
+
+fish(15, 0)
+
+```
+
+####1.c. What is the probability that she will hear exactly 3 calls in a session?
+
+```{r}
+
+fish(15, 3)
+
+```
+
+####1.d. Plot the relevant Poisson mass function over the values in range 0 ≤ x ≤ 30
+
+```{r}
+
+x <- 0:30
+l = 15
+monkeycalls <- dpois(x = x, lambda = l)
+barplot(monkeycalls, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = paste0("Probability Mass Function\nlambda = ", 
+    l))
+
+```
+
+####1.e. Simulate 104 results from this distribution (i.e., 2 years of Saturday monitoring sessions).
+
+```{r}
+
+x <- 0:30
+l = 15
+monkeycalls <- dpois(x = x, lambda = l)
+
+n <- 104
+sim <- function(n) {
+  sample(monkeycalls, n, replace = TRUE)
+}
+
+sim(n)
+
+```
+
+####1.f. Plot the simulated results using hist() and use xlim() to set the horizontal limits to be from 0 to 30. How does your histogram compare to the shape of the probability mass function you plotted above?
+
+```{r}
+
+hist(sim(n))
+
+sim(n)
+nrolls <- 1000
+roll <- function(x) {
+    sample(1:6, x, replace = TRUE)
+}
+
+
+```
