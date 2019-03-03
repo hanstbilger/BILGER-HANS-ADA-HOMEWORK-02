@@ -28,7 +28,7 @@ fish <- function(l, x) {
 
 fish(15, 8)
 
-#or we can also use the functionality built into R:
+#or we can also use the functionality built into base R:
 
 dpois(x = 8, lambda = 15)
 
@@ -104,4 +104,154 @@ TwoYears
 hist(TwoYears, xlim = c(0,30), xlab = "# of calls", ylab = "Frequency", prob = TRUE)
 
 # My histogram looks similar to the shape of the probability mass function plotted above, but the shape of the curve is not quite as smooth. I assume this is because the histogram is constructed from fewer observations.
+```
+
+#Challenge 2: Zombies
+
+```{r}
+library(curl)
+f <- f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+####2.a. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education).
+
+```{r}
+library(dplyr)
+meanHeight <- mean(d$height)
+meanWeight <- mean(d$weight)
+meanAge <- mean(d$age)
+meanKilled <- mean(d$zombies_killed)
+meanEd <- mean(d$years_of_education)
+
+sdHeight <- sd(d$height)
+sdWeigth <- sd(d$weight)
+sdAge <- sd(d$age)
+sdKilled <- sd(d$zombies_killed)
+sdmeanEd <- sd(d$years_of_education)
+
+d
+f <- as.tibble(c(height = mean(d$height), ))
+```
+
+####2.b. Use {ggplot} and make boxplots of each of these variable by gender.
+```{r}
+library(tidyverse)
+
+# mean boxplots
+HeightBP <- ggplot(d, aes(x=gender, y=height)) + 
+  geom_boxplot()
+mHeightBP
+
+WeightBP <- ggplot(d, aes(x=gender, y=weight)) + 
+  geom_boxplot()
+mWeightBP
+
+AgeBP <- ggplot(d, aes(x=gender, y=age)) + 
+  geom_boxplot()
+mAgeBP
+
+KilledBP <- ggplot(d, aes(x=gender, y=zombies_killed)) + 
+  geom_boxplot()
+mKilledBP
+
+EdBP <- ggplot(d, aes(x=gender, y=years_of_education)) + 
+  geom_boxplot()
+EdBP
+
+```
+
+####2.c. Use {ggplot} and make scatterplots of height and weight in relation to age. Do these variables seem to be related? In what way?
+
+```{r}
+HeightVsAge <- ggplot(d, aes(x=age, y=height)) +
+                        geom_point()
+HeightVsAge
+
+WeightVsAge <- ggplot(d, aes(x=age, y=weight)) +
+                  geom_point()
+WeightVsAge
+
+# Both of these variables seem to have a positive correlation with age.
+```
+
+####2.d. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not?
+
+```{r}
+library(cowplot)
+
+hist.height <- ggplot(d, aes(x=height)) +
+  geom_histogram()
+
+hist.weight <- ggplot(d, aes(x=weight)) +
+  geom_histogram()
+
+hist.age <- ggplot(d, aes(x=age)) +
+  geom_histogram()
+
+hist.killed <- ggplot(d, aes(x=zombies_killed)) +
+  geom_histogram()
+
+hist.ed <- ggplot(d, aes(x=years_of_education)) +
+  geom_histogram()
+
+qq.height <- ggplot(d, aes(sample=height)) +
+  geom_qq() +
+  ggtitle("Height")
+
+qq.weight <- ggplot(d, aes(sample=weight)) +
+  geom_qq() +
+  ggtitle("Weight")
+
+qq.age <- ggplot(d, aes(sample=age)) +
+  geom_qq() +
+  ggtitle("Age")
+
+qq.killed <- ggplot(d, aes(sample=zombies_killed)) +
+  geom_qq() +
+  ggtitle("Killed")
+
+qq.ed <- ggplot(d, aes(sample=years_of_education)) +
+  geom_qq() +
+  ggtitle("Years of Education")
+
+
+plot_grid(hist.height, qq.height, hist.weight, qq.weight, hist.age, qq.age, hist.killed, qq.killed, hist.ed, qq.ed)
+
+
+# Weight and age appear to be normally distributed. Height, zombies_killed, and years_of_education appear not to be normally distributed.
+
+```
+
+####2.e. Now use the sample() function to sample ONE subset of 30 zombies (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you will need to base your estimate of the CIs on some different distribution!
+```{r}
+library(tidyverse)
+Zsample <- sample_n(d, 30)
+
+mZsample_height <- mean(Zsample$height)
+mZsample_height
+sdZsample_height <- sd(Zsample$height)
+sdZsample_height
+
+mZsample_weight <- mean(Zsample$weight)
+mZsample_weight
+sdZsample_weight <- sd(Zsample$weight)
+sdZsample_weight
+
+mZsample_age <- mean(Zsample$age)
+mZsample_age
+sdZsample_age <- sd(Zsample$age)
+sdZsample_age
+
+mZsample_height <- mean(Zsample$height)
+mZsample_height
+sdZsample_height <- sd(Zsample$height)
+sdZsample_height
+
+mZsample_height <- mean(Zsample$height)
+mZsample_height
+sdZsample_height <- sd(Zsample$height)
+sdZsample_height
+
 ```
