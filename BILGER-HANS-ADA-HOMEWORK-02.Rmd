@@ -198,22 +198,27 @@ hist.ed <- ggplot(d, aes(x=years_of_education)) +
 
 qq.height <- ggplot(d, aes(sample=height)) +
   geom_qq() +
+  geom_qq_line() +
   ggtitle("Height")
 
 qq.weight <- ggplot(d, aes(sample=weight)) +
   geom_qq() +
+  geom_qq_line() +
   ggtitle("Weight")
 
 qq.age <- ggplot(d, aes(sample=age)) +
   geom_qq() +
+  geom_qq_line() +
   ggtitle("Age")
 
 qq.killed <- ggplot(d, aes(sample=zombies_killed)) +
   geom_qq() +
+  geom_qq_line() +
   ggtitle("Killed")
 
 qq.ed <- ggplot(d, aes(sample=years_of_education)) +
   geom_qq() +
+  geom_qq_line() +
   ggtitle("Years of Education")
 
 
@@ -233,25 +238,46 @@ mZsample_height <- mean(Zsample$height)
 mZsample_height
 sdZsample_height <- sd(Zsample$height)
 sdZsample_height
+seZsample_height <- sdZsample_height/sqrt(length(Zsample$height))
+seZsample_height
+CI_height <- c(mZsample_height-2*seZsample_height,mZsample_height+2*seZsample_height)
+CI_height
 
 mZsample_weight <- mean(Zsample$weight)
 mZsample_weight
 sdZsample_weight <- sd(Zsample$weight)
 sdZsample_weight
+seZsample_weight <- sdZsample_weight/sqrt(length(Zsample$weight))
+seZsample_weight
+CI_weight <- c(mZsample_weight-2*seZsample_weight,mZsample_weight+2*seZsample_weight)
+CI_weight
 
 mZsample_age <- mean(Zsample$age)
 mZsample_age
 sdZsample_age <- sd(Zsample$age)
 sdZsample_age
+seZsample_age <- sdZsample_age/sqrt(length(Zsample$age))
+seZsample_age
+CI_age <- c(mZsample_age-2*seZsample_age,mZsample_age+2*seZsample_age)
+CI_age
 
-mZsample_height <- mean(Zsample$height)
-mZsample_height
-sdZsample_height <- sd(Zsample$height)
-sdZsample_height
+mZsample_killed <- mean(Zsample$zombies_killed)
+mZsample_killed
+sdZsample_killed <- sd(Zsample$zombies_killed)
+sdZsample_killed
+seZsample_killed <- sdZsample_killed/sqrt(length(Zsample$zombies_killed))
+seZsample_killed
+CI_killed <- c(mZsample_killed-2*seZsample_killed,mZsample_killed+2*seZsample_killed)
+CI_killed
 
-mZsample_height <- mean(Zsample$height)
-mZsample_height
-sdZsample_height <- sd(Zsample$height)
-sdZsample_height
+mZsample_ed <- mean(Zsample$years_of_education)
+mZsample_ed
+sdZsample_ed <- sd(Zsample$years_of_education)
+sdZsample_ed
+seZsample_ed <- sdZsample_ed/sqrt(length(Zsample$years_of_education))
+seZsample_ed
+CI_ed <- c(mZsample_ed-2*seZsample_ed,mZsample_ed+2*seZsample_ed)
+CI_ed
 
 ```
+
