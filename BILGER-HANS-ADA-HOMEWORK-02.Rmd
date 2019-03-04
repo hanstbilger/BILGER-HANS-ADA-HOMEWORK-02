@@ -103,7 +103,7 @@ TwoYears
 
 hist(TwoYears, xlim = c(0,30), xlab = "# of calls", ylab = "Frequency", prob = TRUE)
 
-# My histogram looks similar to the shape of the probability mass function plotted above, but the shape of the curve is not quite as smooth. I assume this is because the histogram is constructed from fewer observations.
+# My histogram looks similar to the shape of the probability mass function plotted above, but the shape of the curve is not quite as smooth. It seems to taper off more quickly as the values approach 0. I assume this is in part because the histogram is constructed from fewer observations.
 ```
 
 #Challenge 2: Zombies
@@ -299,9 +299,6 @@ critvalZsample_killed
 CI_killed <- c(mZsample_killed-critvalZsample_killed*seZsample_killed, mZsample_killed+critvalZsample_killed*seZsample_killed)
 CI_killed
 
-
-mean(Zsample$years_of_education)
-median(Zsample$years_of_education)
 mZsample_ed <- mean(Zsample$years_of_education)
 mZsample_ed
 sdZsample_ed <- sd(Zsample$years_of_education)
@@ -309,17 +306,14 @@ sdZsample_ed
 seZsample_ed <- sdZsample_ed/sqrt(length(Zsample$years_of_education))
 seZsample_ed
 
-var(Zsample$years_of_education)
 mean(Zsample$years_of_education)
+var(Zsample$years_of_education)
+
 #It's less clear to me that years_of_education can be modelled as an open ended count of independently occurring events. But data here are right skewed, and the population mean and variance are close to equal. Therefore I decided to use the Poisson distribution again for the confidence interval.
 
-lower_critvalZsample_ed <- qpois(0.975, lambda = mZsample_ed)
-upper_critvalZsample_ed <- qpois(0.025, lambda = mZsample_ed)
-lower_critvalZsample_ed
-upper_critvalZsample_ed
-CI_ed <- c(mZsample_ed-lower_critvalZsample_ed*seZsample_ed, mZsample_ed-upper_critvalZsample_ed*seZsample_ed)
+critvalZsample_ed <- qpois(0.975, lambda = mZsample_ed)
+CI_ed <- c(mZsample_ed-critvalZsample_ed*seZsample_ed, mZsample_ed+critvalZsample_ed*seZsample_ed)
 CI_ed
-
 ```
 ####2.f. Now draw 99 more random samples of 30 zombies out and calculate the mean for each of the these samples. Together with the first sample you drew out, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of the sampling distribution for each variable? How do the standard deviations compare to the standard errors estimated in [2.e.]? What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
 ```{r, echo=FALSE}
@@ -331,7 +325,7 @@ library(dplyr)
 k <- 99
 s <- NULL
 for (i in 1:k) {
-    s[[i]] <- sample_n(d, 30)
+    s[[i]] <- sample_n(d, 30, replace=FALSE)
 }
 NewSample <- c(s, list(Zsample))
 ```
@@ -354,8 +348,6 @@ for (i in 1:100) {
 }
 mean(m_weight)
 sd(m_weight)
-qqnorm(m_weight)
-qqline(m_weight)
 
 #age
 m_age <- NULL
@@ -414,13 +406,10 @@ library(cowplot)
 
 nqq_height <- qqnorm(m_height)
 nqq_height <- qqline(m_height)
-nqq_height
 
 nhist_height <- hist(m_height)
-nhist_height
 
 #Sample distribution seems to deviate from a normal distribution at high and low values.
-
 ```
 
 ```{r}
@@ -428,10 +417,8 @@ nhist_height
 
 nqq_weight <- qqnorm(m_weight)
 nqq_weight <- qqline(m_weight)
-nqq_weight
 
 nhist_weight <- hist(m_weight)
-nhist_weight
 
 # Sample distribution appears normal.
 ```
@@ -441,11 +428,8 @@ nhist_weight
 
 nqq_age <- qqnorm(m_age)
 nqq_age <- qqline(m_age)
-nqq_age
 
 nhist_age <- hist(m_age)
-nhist_age
-
 
 # Sample distribution seems to deviate from a normal distribution at high and low values.
 ```
@@ -455,11 +439,8 @@ nhist_age
 
 nqq_killed <- qqnorm(m_killed)
 nqq_killed <- qqline(m_killed)
-nqq_killed
 
 nhist_killed <- hist(m_killed)
-nhist_killed
-
 
 # Sample distribution seems to deviate from a normal distribution at high and low values. This is from a variable that orignially seemed to be drawn from a Poisson distribution.
 ```
@@ -469,11 +450,8 @@ nhist_killed
 
 nqq_ed <- qqnorm(m_ed)
 nqq_ed <- qqline(m_ed)
-nqq_ed
 
 nhist_ed <- hist(m_ed)
-nhist_ed
-
 
 # Sample distribution appears normal. This is from a variable that orignially seemed to be drawn from a Poisson distribution.
 ```
