@@ -108,18 +108,23 @@ hist(TwoYears, xlim = c(0,30), xlab = "# of calls", ylab = "Frequency", prob = T
 
 #Challenge 2: Zombies
 
-```{r}
+```{r, echo=FALSE}
 library(curl)
+```
+
+```{r}
 f <- f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
-d
 ```
 
 ####2.a. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education).
 
-```{r}
+```{r, echo=FALSE}
 library(dplyr)
+```
+
+```{r}
 meanHeight <- mean(d$height)
 meanHeight
 meanWeight <- mean(d$weight)
@@ -141,14 +146,15 @@ sdKilled <- sqrt(sum((d$zombies_killed - mean(d$zombies_killed))^2)/(1000))
 sdKilled
 sdEd <- sqrt(sum((d$years_of_education - mean(d$years_of_education))^2)/(1000))
 sdEd
-
 ```
 
 ####2.b. Use {ggplot} and make boxplots of each of these variable by gender.
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
 library(cowplot)
+```
 
+```{r}
 # mean boxplots
 HeightBP <- ggplot(d, aes(x=gender, y=height)) + 
   geom_boxplot()
@@ -183,9 +189,11 @@ plot_grid(HeightVsAge, WeightVsAge)
 
 ####2.d. Using histograms and Q-Q plots, check whether the quantitative variables seem to be drawn from a normal distribution. Which seem to be and which do not?
 
-```{r}
+```{r, echo=FALSE}
 library(cowplot)
+```
 
+```{r}
 hist.height <- ggplot(d, aes(x=height)) +
   geom_histogram()
 
@@ -234,9 +242,12 @@ plot_grid(hist.height, qq.height, hist.weight, qq.weight, hist.age, qq.age, hist
 ```
 
 ####2.e. Now use the sample() function to sample ONE subset of 30 zombies (without replacement) from this population and calculate the mean and sample standard deviation for each variable. Also estimate the standard error for each variable and construct the 95% confidence interval for each mean. Note that for the variables that are not drawn from the normal distribution, you will need to base your estimate of the CIs on some different distribution!
+```{r, echo=FALSE}
+library(manipulate)
+```
+
 ```{r}
-library(tidyverse)
-Zsample <- sample_n(d, 30)
+Zsample <- d[sample(nrow(d), 30, replace=FALSE), ]
 
 mZsample_height <- mean(Zsample$height)
 mZsample_height
@@ -244,9 +255,9 @@ sdZsample_height <- sd(Zsample$height)
 sdZsample_height
 seZsample_height <- sdZsample_height/sqrt(length(Zsample$height))
 seZsample_height
-critvalZsample_height <- qt(0.975, df = length(Zsample$height-1))
+critvalZsample_height <- qnorm(0.975)
 critvalZsample_height
-CI_height <- c(mZsample_height-critvalZsample_height*seZsample_height, mZsample_height+critval*seZsample_height)
+CI_height <- c(mZsample_height-critvalZsample_height*seZsample_height, mZsample_height+critvalZsample_height*seZsample_height)
 CI_height
 
 mZsample_weight <- mean(Zsample$weight)
@@ -255,9 +266,9 @@ sdZsample_weight <- sd(Zsample$weight)
 sdZsample_weight
 seZsample_weight <- sdZsample_weight/sqrt(length(Zsample$weight))
 seZsample_weight
-critvalZsample_weight <- qt(0.975, df = length(Zsample$weight-1))
+critvalZsample_weight <- qnorm(0.975)
 critvalZsample_weight
-CI_weight <- c(mZsample_weight-critvalZsample_weight*seZsample_weight, mZsample_weight+critval*seZsample_weight)
+CI_weight <- c(mZsample_weight-critvalZsample_weight*seZsample_weight, mZsample_weight+critvalZsample_weight*seZsample_weight)
 CI_weight
 
 mZsample_age <- mean(Zsample$age)
@@ -266,9 +277,9 @@ sdZsample_age <- sd(Zsample$age)
 sdZsample_age
 seZsample_age <- sdZsample_age/sqrt(length(Zsample$age))
 seZsample_age
-critvalZsample_age <- qt(0.975, df = length(Zsample$age-1))
+critvalZsample_age <- qnorm(0.975)
 critvalZsample_age
-CI_age <- c(mZsample_age-critvalZsample_age*seZsample_age, mZsample_age+critval*seZsample_age)
+CI_age <- c(mZsample_age-critvalZsample_age*seZsample_age, mZsample_age+critvalZsample_age*seZsample_age)
 CI_age
 
 mZsample_killed <- mean(Zsample$zombies_killed)
@@ -279,21 +290,16 @@ seZsample_killed <- sdZsample_killed/sqrt(length(Zsample$zombies_killed))
 seZsample_killed
 
 var(Zsample$zombies_killed)
-#[1] 2.822989
 mean(Zsample$zombies_killed)
-#[1] 2.933333
 
 #The data are right skewed, and the population mean and variance are close to equal. Also, number of zombies killed seems potentially reasonable to model as an open ended count of independently occurring events. For these reasons, I will use a Poisson distribution to construct my confidence interval.
 
 critvalZsample_killed <- qpois(0.975, lambda = mZsample_killed)
 critvalZsample_killed
-CI_killed <- c(mZsample_killed-critvalZsample_killed*seZsample_killed, mZsample_killed+critval*seZsample_killed)
+CI_killed <- c(mZsample_killed-critvalZsample_killed*seZsample_killed, mZsample_killed+critvalZsample_killed*seZsample_killed)
 CI_killed
 
 
-
-median(Zsample$zombies_killed)
-mean(Zsample$zombies_killed)
 mean(Zsample$years_of_education)
 median(Zsample$years_of_education)
 mZsample_ed <- mean(Zsample$years_of_education)
@@ -302,12 +308,172 @@ sdZsample_ed <- sd(Zsample$years_of_education)
 sdZsample_ed
 seZsample_ed <- sdZsample_ed/sqrt(length(Zsample$years_of_education))
 seZsample_ed
-critvalZsample_ed <- qt(0.975, df = length(Zsample$years_of_education-1))
-critvalZsample_ed
-CI_ed <- c(mZsample_ed-critvalZsample_ed*seZsample_ed, mZsample_ed+critval*seZsample_ed)
+
+var(Zsample$years_of_education)
+mean(Zsample$years_of_education)
+#It's less clear to me that years_of_education can be modelled as an open ended count of independently occurring events. But data here are right skewed, and the population mean and variance are close to equal. Therefore I decided to use the Poisson distribution again for the confidence interval.
+
+lower_critvalZsample_ed <- qpois(0.975, lambda = mZsample_ed)
+upper_critvalZsample_ed <- qpois(0.025, lambda = mZsample_ed)
+lower_critvalZsample_ed
+upper_critvalZsample_ed
+CI_ed <- c(mZsample_ed-lower_critvalZsample_ed*seZsample_ed, mZsample_ed-upper_critvalZsample_ed*seZsample_ed)
 CI_ed
 
-qt(0.975, df = length(Zsample$height-1))
-quantile(Zsample$height, 0.975)
+```
+####2.f. Now draw 99 more random samples of 30 zombies out and calculate the mean for each of the these samples. Together with the first sample you drew out, you now have a set of 100 means for each variable (each based on 30 observations), which constitutes a sampling distribution for each variable. What are the means and standard deviations of the sampling distribution for each variable? How do the standard deviations compare to the standard errors estimated in [2.e.]? What do these sampling distributions look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
+```{r, echo=FALSE}
+library(dplyr)
 ```
 
+```{r}
+## 99 more random samples
+k <- 99
+s <- NULL
+for (i in 1:k) {
+    s[[i]] <- sample_n(d, 30)
+}
+NewSample <- c(s, list(Zsample))
+```
+
+```{r}
+#mean/sd of sampling distribution
+
+#height
+m_height <- NULL
+for (i in 1:100) {
+    m_height[i] <- mean(NewSample[[i]]$height) 
+}
+mean(m_height)
+sd(m_height)
+
+#weight
+m_weight <- NULL
+for (i in 1:100) {
+    m_weight[i] <- mean(NewSample[[i]]$weight)
+}
+mean(m_weight)
+sd(m_weight)
+qqnorm(m_weight)
+qqline(m_weight)
+
+#age
+m_age <- NULL
+for (i in 1:100) {
+    m_age[i] <- mean(NewSample[[i]]$age)
+}
+mean(m_age)
+sd(m_age)
+
+#killed
+m_killed <- NULL
+for (i in 1:100) {
+    m_killed[i] <- mean(NewSample[[i]]$zombies_killed)
+}
+mean(m_killed)
+sd(m_killed)
+
+#ed
+m_ed <- NULL
+for (i in 1:100) {
+    m_ed[i] <- mean(NewSample[[i]]$years_of_education)
+}
+mean(m_ed)
+sd(m_ed)
+
+```
+
+```{r}
+#sd and se comparison
+
+sd(m_height)
+seZsample_height
+
+sd(m_weight)
+seZsample_weight
+
+sd(m_age)
+seZsample_age
+
+sd(m_killed)
+seZsample_killed
+
+sd(m_ed)
+seZsample_ed
+
+#The standard deviations are generally close to the standard errors estimated in 2e.
+```
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(cowplot)
+```
+
+```{r}
+# Sample distribution assessment — height
+
+nqq_height <- qqnorm(m_height)
+nqq_height <- qqline(m_height)
+nqq_height
+
+nhist_height <- hist(m_height)
+nhist_height
+
+#Sample distribution seems to deviate from a normal distribution at high and low values.
+
+```
+
+```{r}
+# Sample distribution assessment — weight
+
+nqq_weight <- qqnorm(m_weight)
+nqq_weight <- qqline(m_weight)
+nqq_weight
+
+nhist_weight <- hist(m_weight)
+nhist_weight
+
+# Sample distribution appears normal.
+```
+
+```{r}
+# Sample distribution assessment — age
+
+nqq_age <- qqnorm(m_age)
+nqq_age <- qqline(m_age)
+nqq_age
+
+nhist_age <- hist(m_age)
+nhist_age
+
+
+# Sample distribution seems to deviate from a normal distribution at high and low values.
+```
+
+```{r}
+# Sample distribution assessment — killed
+
+nqq_killed <- qqnorm(m_killed)
+nqq_killed <- qqline(m_killed)
+nqq_killed
+
+nhist_killed <- hist(m_killed)
+nhist_killed
+
+
+# Sample distribution seems to deviate from a normal distribution at high and low values. This is from a variable that orignially seemed to be drawn from a Poisson distribution.
+```
+
+```{r}
+# Sample distribution assessment — ed
+
+nqq_ed <- qqnorm(m_ed)
+nqq_ed <- qqline(m_ed)
+nqq_ed
+
+nhist_ed <- hist(m_ed)
+nhist_ed
+
+
+# Sample distribution appears normal. This is from a variable that orignially seemed to be drawn from a Poisson distribution.
+```
