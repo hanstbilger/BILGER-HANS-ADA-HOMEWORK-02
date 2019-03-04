@@ -113,6 +113,7 @@ library(curl)
 f <- f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/zombies.csv")
 d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(d)
+d
 ```
 
 ####2.a. Calculate the population mean and standard deviation for each quantitative random variable (height, weight, age, number of zombies killed, and years of education).
@@ -120,46 +121,51 @@ head(d)
 ```{r}
 library(dplyr)
 meanHeight <- mean(d$height)
+meanHeight
 meanWeight <- mean(d$weight)
+meanWeight
 meanAge <- mean(d$age)
+meanAge
 meanKilled <- mean(d$zombies_killed)
+meanKilled
 meanEd <- mean(d$years_of_education)
+meanEd
 
-sdHeight <- sd(d$height)
-sdWeigth <- sd(d$weight)
-sdAge <- sd(d$age)
-sdKilled <- sd(d$zombies_killed)
-sdmeanEd <- sd(d$years_of_education)
+sdHeight <- sqrt(sum((d$height - mean(d$height))^2)/(1000))
+sdHeight
+sdWeight <- sqrt(sum((d$weight - mean(d$weight))^2)/(1000))
+sdWeight
+sdAge <- sqrt(sum((d$age - mean(d$age))^2)/(1000))
+sdAge
+sdKilled <- sqrt(sum((d$zombies_killed - mean(d$zombies_killed))^2)/(1000))
+sdKilled
+sdEd <- sqrt(sum((d$years_of_education - mean(d$years_of_education))^2)/(1000))
+sdEd
 
-d
-f <- as.tibble(c(height = mean(d$height), ))
 ```
 
 ####2.b. Use {ggplot} and make boxplots of each of these variable by gender.
 ```{r}
 library(tidyverse)
+library(cowplot)
 
 # mean boxplots
 HeightBP <- ggplot(d, aes(x=gender, y=height)) + 
   geom_boxplot()
-mHeightBP
 
 WeightBP <- ggplot(d, aes(x=gender, y=weight)) + 
   geom_boxplot()
-mWeightBP
 
 AgeBP <- ggplot(d, aes(x=gender, y=age)) + 
   geom_boxplot()
-mAgeBP
 
 KilledBP <- ggplot(d, aes(x=gender, y=zombies_killed)) + 
   geom_boxplot()
-mKilledBP
 
 EdBP <- ggplot(d, aes(x=gender, y=years_of_education)) + 
   geom_boxplot()
-EdBP
 
+plot_grid(HeightBP, WeightBP, AgeBP, KilledBP, EdBP)
 ```
 
 ####2.c. Use {ggplot} and make scatterplots of height and weight in relation to age. Do these variables seem to be related? In what way?
@@ -167,12 +173,11 @@ EdBP
 ```{r}
 HeightVsAge <- ggplot(d, aes(x=age, y=height)) +
                         geom_point()
-HeightVsAge
 
 WeightVsAge <- ggplot(d, aes(x=age, y=weight)) +
                   geom_point()
-WeightVsAge
 
+plot_grid(HeightVsAge, WeightVsAge)
 # Both of these variables seem to have a positive correlation with age.
 ```
 
@@ -224,8 +229,7 @@ qq.ed <- ggplot(d, aes(sample=years_of_education)) +
 
 plot_grid(hist.height, qq.height, hist.weight, qq.weight, hist.age, qq.age, hist.killed, qq.killed, hist.ed, qq.ed)
 
-
-# Weight and age appear to be normally distributed. Height, zombies_killed, and years_of_education appear not to be normally distributed.
+# Height, weight, and age appear to be normally distributed. zombies_killed, and years_of_education appear not to be normally distributed.
 
 ```
 
@@ -240,7 +244,9 @@ sdZsample_height <- sd(Zsample$height)
 sdZsample_height
 seZsample_height <- sdZsample_height/sqrt(length(Zsample$height))
 seZsample_height
-CI_height <- c(mZsample_height-2*seZsample_height,mZsample_height+2*seZsample_height)
+critvalZsample_height <- qt(0.975, df = length(Zsample$height-1))
+critvalZsample_height
+CI_height <- c(mZsample_height-critvalZsample_height*seZsample_height, mZsample_height+critval*seZsample_height)
 CI_height
 
 mZsample_weight <- mean(Zsample$weight)
@@ -249,7 +255,9 @@ sdZsample_weight <- sd(Zsample$weight)
 sdZsample_weight
 seZsample_weight <- sdZsample_weight/sqrt(length(Zsample$weight))
 seZsample_weight
-CI_weight <- c(mZsample_weight-2*seZsample_weight,mZsample_weight+2*seZsample_weight)
+critvalZsample_weight <- qt(0.975, df = length(Zsample$weight-1))
+critvalZsample_weight
+CI_weight <- c(mZsample_weight-critvalZsample_weight*seZsample_weight, mZsample_weight+critval*seZsample_weight)
 CI_weight
 
 mZsample_age <- mean(Zsample$age)
@@ -258,7 +266,9 @@ sdZsample_age <- sd(Zsample$age)
 sdZsample_age
 seZsample_age <- sdZsample_age/sqrt(length(Zsample$age))
 seZsample_age
-CI_age <- c(mZsample_age-2*seZsample_age,mZsample_age+2*seZsample_age)
+critvalZsample_age <- qt(0.975, df = length(Zsample$age-1))
+critvalZsample_age
+CI_age <- c(mZsample_age-critvalZsample_age*seZsample_age, mZsample_age+critval*seZsample_age)
 CI_age
 
 mZsample_killed <- mean(Zsample$zombies_killed)
@@ -267,17 +277,37 @@ sdZsample_killed <- sd(Zsample$zombies_killed)
 sdZsample_killed
 seZsample_killed <- sdZsample_killed/sqrt(length(Zsample$zombies_killed))
 seZsample_killed
-CI_killed <- c(mZsample_killed-2*seZsample_killed,mZsample_killed+2*seZsample_killed)
+
+var(Zsample$zombies_killed)
+#[1] 2.822989
+mean(Zsample$zombies_killed)
+#[1] 2.933333
+
+#The data are right skewed, and the population mean and variance are close to equal. Also, number of zombies killed seems potentially reasonable to model as an open ended count of independently occurring events. For these reasons, I will use a Poisson distribution to construct my confidence interval.
+
+critvalZsample_killed <- qpois(0.975, lambda = mZsample_killed)
+critvalZsample_killed
+CI_killed <- c(mZsample_killed-critvalZsample_killed*seZsample_killed, mZsample_killed+critval*seZsample_killed)
 CI_killed
 
+
+
+median(Zsample$zombies_killed)
+mean(Zsample$zombies_killed)
+mean(Zsample$years_of_education)
+median(Zsample$years_of_education)
 mZsample_ed <- mean(Zsample$years_of_education)
 mZsample_ed
 sdZsample_ed <- sd(Zsample$years_of_education)
 sdZsample_ed
 seZsample_ed <- sdZsample_ed/sqrt(length(Zsample$years_of_education))
 seZsample_ed
-CI_ed <- c(mZsample_ed-2*seZsample_ed,mZsample_ed+2*seZsample_ed)
+critvalZsample_ed <- qt(0.975, df = length(Zsample$years_of_education-1))
+critvalZsample_ed
+CI_ed <- c(mZsample_ed-critvalZsample_ed*seZsample_ed, mZsample_ed+critval*seZsample_ed)
 CI_ed
 
+qt(0.975, df = length(Zsample$height-1))
+quantile(Zsample$height, 0.975)
 ```
 
